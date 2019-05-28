@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include <vector>
+#include <sstream>
 #include <string>
 #include "IOperand.hpp"
 #include "Error.hpp"
@@ -30,7 +31,7 @@ class Parser {
 		void		choose_read();
 		void		read_stdin();
 		void		read_file();
-		bool		verify_instruction( std::string instr );
+		int			verify_instruction( std::string instr );
 		bool		verify_type( std::string type );
 		bool		verify_value( std::string val );
 		std::string _str;
