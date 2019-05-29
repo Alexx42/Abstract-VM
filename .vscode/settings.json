@@ -50,6 +50,9 @@
 		"type_traits": "cpp",
 		"typeinfo": "cpp",
 		"utility": "cpp",
-		"vector": "cpp"
+		"vector": "cpp",
+		"__tree": "cpp",
+		"map": "cpp",
+		"sstream": "cpp"
 	}
 }
