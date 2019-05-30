@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 18:56:20 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/05/29 03:39:56 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/05/29 22:23:37 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <iostream>
 #include <map>
 #include <queue>
+#include <stdexcept>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -57,6 +58,7 @@ class Parser {
 		static std::string										extractString( std::string , char , char );
 		static int												count_words( std::string );
 		static void												isNumber( std::string val );
+		static void												removeZero( std::string & val );
 };
 
 # endif

@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 18:56:10 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/05/29 03:33:16 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/05/30 00:02:39 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,22 @@ std::string		Parser::extractString( std::string source, char start, char end ) {
 		}
 	}
 	return std::string() ;
+}
+
+void			Parser::removeZero( std::string & val ) {
+	if (val.find('.') == std::string::npos) {
+		return ;
+	}
+	for (std::string::size_type s = val.length() - 1; s > 0; --s) {
+		if (val[s] == '0') {
+			val.erase(s, 1);
+		} else {
+			break;
+		}
+	}
+	if (val[val.length() - 1] == '.') {
+		val.erase(val.length() - 1, 1);
+	}
 }
 
 int				Parser::count_words( std::string str ) {
@@ -52,9 +68,28 @@ int				Parser::count_words( std::string str ) {
 }
 
 void			Parser::isNumber( std::string str ) {
+	int			count_dot;
+	int			count_neg;
+	Error		err;
+
+	count_dot = 0;
+	count_neg = 0;
 	for (int i = 0; str[i]; i++) {
-		if (!std::isdigit(str[i]))
+		if (str[i] == ';') {
+			err.setError("Syntax error : ';' found near value");
+			throw err;
+		}
+		if (!std::isdigit(str[i]) && str[i] != '.' && str[i] != '-')
 			throw std::invalid_argument("");
+		if (str[i] == '.') {
+			count_dot++;
+		} else if (str[i] == '-') {
+			count_neg++;
+		}
+	}
+	if (count_dot > 1 || count_neg > 1) {
+		err.setError("Syntax error : Invalid value");
+		throw err;
 	}
 }
 
@@ -83,7 +118,6 @@ Parser & Parser::operator=( Parser const & rhs ) {
 }
 
 void			Parser::initVector( void ) {
-	//TODO
 	_v.push_back(std::make_pair("push", true));
 	_v.push_back(std::make_pair("pop", false));
 	_v.push_back(std::make_pair("assert", true));
@@ -99,8 +133,8 @@ void			Parser::initVector( void ) {
 	_type.push_back({"int8", INT8_MIN, INT8_MAX});
 	_type.push_back({"int16", INT16_MIN, INT16_MAX});
 	_type.push_back({"int32", INT32_MIN, INT32_MAX});
-	_type.push_back({"float", __FLT_MIN__, __FLT_MAX__});
-	_type.push_back({"double", __DBL_MIN__, __DBL_MAX__});
+	_type.push_back({"float", std::numeric_limits<float>::lowest(),  std::numeric_limits<float>::max()});
+	_type.push_back({"double", std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max()});
 
 }
 
@@ -137,6 +171,8 @@ std::string		Parser::verify_value( std::string val, eOperandType e ) {
 	p_cl = 0;
 	for (auto c : val) {
 		if (!isspace(c) && p_cl > 0) {
+			if (c == ';')
+				break ;
 			err.setError("Syntax error after ')'");
 			throw err;
 		}
@@ -151,11 +187,22 @@ std::string		Parser::verify_value( std::string val, eOperandType e ) {
 	}
 	try {
 		isNumber(str_p);
-		nb = std::stoi(str_p);
+		nb = std::stod(str_p);
+		std::string cmp = std::to_string(nb);
+		removeZero(cmp);
+		if (cmp != str_p) {
+			if (str_p[0] == '-') {
+				err.setError("Underflow");
+			} else {
+				err.setError("Overflow");
+			}
+			throw err;
+		}
 		if (nb > _type.at(e).max) {
 			err.setError("Overflow");
 			throw err;
 		} else if (nb < _type.at(e).min) {
+			std::cout << "val = " << nb << std::endl;
 			err.setError("Underflow");
 			throw err;
 		}
@@ -185,6 +232,10 @@ IOperand		const *Parser::verify_type( std::vector<std::pair<std::string, bool>>:
 	if (it->second == false)
 		return nullptr;
 	std::string type = extractString(str, ' ', '(');
+	if (type.find(';') != std::string::npos) {
+		err.setError("Syntax error : ';' found near type");
+		throw err;
+	}
 	type.erase(remove(type.begin(), type.end(), ' '), type.end()); 
 	if (type.empty()) {
 		err.setError("Missing '('");
@@ -266,7 +317,7 @@ void			Parser::read_content( void ) {
 		if (line == ";;")
 			break ;
 		size_t count =  static_cast<size_t>(std::count(line.begin(), line.end(), ' '));
-		if (line.empty() ||  count == line.size())
+		if (line.empty() ||  count == line.size() || line[0] == ';')
 			continue ;
 		try {
 			auto it = verify_instruction(line);

@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/29 00:00:19 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/05/29 02:29:50 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/05/29 23:46:15 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ class ExecCommand {
 		void		print_s( IOperand const * );
 
 		std::vector<std::pair<std::string, const IOperand *>> 	_exec;
-		std::vector< IOperand const * >							_s;
+		std::vector< const IOperand  * >						_s;
 		
 		typedef struct 		s_exec {
 			eCommands		e;

@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/29 00:00:03 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/05/29 03:57:18 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/05/29 23:53:24 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,30 @@ void		ExecCommand::push_s( const IOperand * rhs ) {
 
 void		ExecCommand::mul_s( IOperand const * rhs ) {
 	static_cast<void>(rhs);
+	Error		err;
+	if (_s.size() < 2) {
+		err.setError("Runtime error : stack is empty");
+		throw err;
+	}
+	IOperand const *v1 = (_s.back());
+	_s.pop_back();
+	IOperand const *v2 = (_s.back());
+	_s.pop_back();
+	_s.push_back(*v1 * *v2);
 }
 
 void		ExecCommand::mod_s( IOperand const * rhs ) {
 	static_cast<void>(rhs);
+	Error		err;
+	if (_s.size() < 2) {
+		err.setError("Runtime error : stack is empty");
+		throw err;
+	}
+	IOperand const *v1 = (_s.back());
+	_s.pop_back();
+	IOperand const *v2 = (_s.back());
+	_s.pop_back();
+	_s.push_back(*v1 % *v2);
 }
 
 void		ExecCommand::pop_s( IOperand const * rhs ) {
@@ -67,14 +87,44 @@ void		ExecCommand::pop_s( IOperand const * rhs ) {
 
 void		ExecCommand::div_s( IOperand const * rhs ) {
 	static_cast<void>(rhs);
+	Error		err;
+	if (_s.size() < 2) {
+		err.setError("Runtime error : stack is empty");
+		throw err;
+	}
+	IOperand const *v1 = (_s.back());
+	_s.pop_back();
+	IOperand const *v2 = (_s.back());
+	_s.pop_back();
+	_s.push_back(*v1 / *v2);
 }
 
 void		ExecCommand::sub_s( IOperand const * rhs ) {
 	static_cast<void>(rhs);
+	Error		err;
+	if (_s.size() < 2) {
+		err.setError("Runtime error : stack is empty");
+		throw err;
+	}
+	IOperand const *v1 = (_s.back());
+	_s.pop_back();
+	IOperand const *v2 = (_s.back());
+	_s.pop_back();
+	_s.push_back(*v1 / *v2);
 }
 
 void		ExecCommand::add_s( IOperand const * rhs ) {
 	static_cast<void>(rhs);
+	Error		err;
+	if (_s.size() < 2) {
+		err.setError("Runtime error : stack is empty");
+		throw err;
+	}
+	IOperand const *v1 = (_s.back());
+	_s.pop_back();
+	IOperand const *v2 = (_s.back());
+	_s.pop_back();
+	_s.push_back(*v1 + *v2);
 }
 
 void		ExecCommand::print_s( IOperand const * rhs ) {
