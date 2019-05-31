@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/28 18:16:44 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/05/29 03:41:30 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/05/30 23:42:06 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,27 +31,43 @@ CreateOperand & CreateOperand::operator=(CreateOperand const & rhs) {
 }
 
 IOperand const *CreateOperand::createInt8( std::string const & value ) const {
-	IOperand *op = new Operand<int8_t>(value, 0, INT8);
+	IOperand *op = new Operand<int8_t>(value, 0, INT8, this);
 	return (op);
 }
 
 IOperand const *CreateOperand::createInt16( std::string const & value ) const {
-	IOperand *op = new Operand<int16_t>(value, 0, INT16);
+	IOperand *op = new Operand<int16_t>(value, 0, INT16, this);
 	return (op);
 }
 
 IOperand const *CreateOperand::createInt32( std::string const & value ) const {
-	IOperand *op = new Operand<int32_t>(value, 0, INT32);
+	IOperand *op = new Operand<int32_t>(value, 0, INT32, this);
 	return (op);
 }
 
 IOperand const *CreateOperand::createFloat( std::string const & value ) const {
-	IOperand *op = new Operand<float>(value, 0, FLOAT);
+	int		precision;
+
+	precision = 0;
+	if (value.find('.') != std::string::npos) {
+		for (std::string::size_type s = value.length() - 1; s > 0 && value[s] != '.'; s--) {
+			precision++;
+		}
+	}
+	IOperand *op = new Operand<float>(value, precision, FLOAT, this);
 	return (op);
 }
 
 IOperand const *CreateOperand::createDouble( std::string const & value ) const {
-	IOperand *op = new Operand<double>(value, 0, DOUBLE);
+	int		precision;
+
+	precision = 0;
+	if (value.find('.') != std::string::npos) {
+		for (std::string::size_type s = value.length() - 1; s > 0 && value[s] != '.'; s--) {
+			precision++;
+		}
+	}
+	IOperand *op = new Operand<double>(value, precision, DOUBLE, this);
 	return (op);
 }
 

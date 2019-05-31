@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/29 00:00:03 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/05/29 23:53:24 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/05/30 15:05:40 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,11 @@ ExecCommand::ExecCommand( std::vector<std::pair<std::string, const IOperand *>> 
 	execFn[3] = {Mod, 		{"mod"}, 		&ExecCommand::mod_s};
 	execFn[4] = {Mul, 		{"mul"}, 		&ExecCommand::mul_s};
 	execFn[5] = {Assert, 	{"assert"}, 	&ExecCommand::assert_s};
-	execFn[6] = {Print, 	{"print"}, 	&ExecCommand::print_s};
+	execFn[6] = {Print, 	{"print"}, 		&ExecCommand::print_s};
 	execFn[7] = {Pop, 		{"pop"}, 		&ExecCommand::pop_s};
 	execFn[8] = {Div, 		{"pop"}, 		&ExecCommand::pop_s};
-	execFn[9] = {Dump, 		{"dump"}, 	&ExecCommand::dump_s};
-	execFn[10] = {Exit, 		{"exit"}, 	&ExecCommand::exit_s};
+	execFn[9] = {Dump, 		{"dump"}, 		&ExecCommand::dump_s};
+	execFn[10] = {Exit, 	{"exit"}, 		&ExecCommand::exit_s};
 }
 
 ExecCommand::~ExecCommand( void )

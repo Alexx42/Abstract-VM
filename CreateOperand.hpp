@@ -6,19 +6,17 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 18:52:39 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/05/28 18:57:57 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/05/30 23:45:16 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CREATEOPERAND_HPP
-# define CREATEOPERAND_HPP
+#ifndef CREATE_OPERAND_HPP
+# define CREATE_OPERAND_HPP
 
 #include <functional>
 #include <map>
 #include "IOperand.hpp"
 #include "Operand.hpp"
-
-
 class CreateOperand {
 	public:
 		CreateOperand( void );
