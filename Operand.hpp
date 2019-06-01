@@ -57,7 +57,7 @@ class Operand : public IOperand {
 				}
 			} else {
 				try {
-					long double		val = std::stold(this->toString()) % std::stold(this->toString());
+					long double		val = std::stold(this->toString()) + std::stold(this->toString());
 					if (hasOUflow<long double>(val, e)) {
 						err.setError("Overflow | Underflow");
 						throw err;
@@ -145,18 +145,20 @@ class Operand : public IOperand {
 			int				precision = getPrecision() > rhs.getPrecision() ? getPrecision() : rhs.getPrecision();
 			static_cast<void>(precision);
 			if (e < FLOAT) {
-				try {
-					long long		val = std::stoll(this->toString()) % std::stoll(this->toString());
-					if (hasOUflow<long long>(val, e)) {
-						err.setError("Overflow | Underflow");
-						throw err;
-					}
-					return (_cr->createOperand(e, std::to_string(val)));
-				} catch (Error e) {
-					std::cout << e.what() << std::endl;
-				}
+				long long		val = std::stoll(this->toString()) % std::stoll(rhs.toString());
+				return (_cr->createOperand(e, std::to_string(val)));
 			} else {
-				double a = 		
+				double a = std::stod(toString());
+				double b = std::stod(rhs.toString());
+				
+				double mod = a;
+				while (mod >= b) {
+					mod = mod - b;
+				}
+				if (a < 0) {
+					mod = -mod;
+				}
+				return _cr->createOperand(e, std::to_string(mod));
 			}
 			return this;	
 		}
