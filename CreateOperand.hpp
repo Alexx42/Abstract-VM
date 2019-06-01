@@ -16,7 +16,7 @@
 #include <functional>
 #include <map>
 #include "IOperand.hpp"
-#include "Operand.hpp"
+
 class CreateOperand {
 	public:
 		CreateOperand( void );

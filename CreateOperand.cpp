@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "CreateOperand.hpp"
+#include "Operand.hpp"
 
 CreateOperand::CreateOperand( void ) {
 	return ;
@@ -31,17 +32,17 @@ CreateOperand & CreateOperand::operator=(CreateOperand const & rhs) {
 }
 
 IOperand const *CreateOperand::createInt8( std::string const & value ) const {
-	IOperand *op = new Operand<int8_t>(value, 0, INT8, this);
+	IOperand *op = new Operand<int8_t>(value, 0, INT8);
 	return (op);
 }
 
 IOperand const *CreateOperand::createInt16( std::string const & value ) const {
-	IOperand *op = new Operand<int16_t>(value, 0, INT16, this);
+	IOperand *op = new Operand<int16_t>(value, 0, INT16);
 	return (op);
 }
 
 IOperand const *CreateOperand::createInt32( std::string const & value ) const {
-	IOperand *op = new Operand<int32_t>(value, 0, INT32, this);
+	IOperand *op = new Operand<int32_t>(value, 0, INT32);
 	return (op);
 }
 
@@ -54,7 +55,7 @@ IOperand const *CreateOperand::createFloat( std::string const & value ) const {
 			precision++;
 		}
 	}
-	IOperand *op = new Operand<float>(value, precision, FLOAT, this);
+	IOperand *op = new Operand<float>(value, precision, FLOAT);
 	return (op);
 }
 
@@ -67,7 +68,7 @@ IOperand const *CreateOperand::createDouble( std::string const & value ) const {
 			precision++;
 		}
 	}
-	IOperand *op = new Operand<double>(value, precision, DOUBLE, this);
+	IOperand *op = new Operand<double>(value, precision, DOUBLE);
 	return (op);
 }
 
