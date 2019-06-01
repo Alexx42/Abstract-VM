@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 18:56:20 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/05/29 22:23:37 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/06/01 00:37:50 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,16 @@ struct	Infos {
 
 class Parser {
 	public:
+		class ParserError : public Error {
+			public:
+				ParserError( std::string err, std::string type, int ln );
+				virtual ~ParserError( void ) ;
+				ParserError( ParserError const & rhs );
+				ParserError & operator=( ParserError const & rhs );
+
+				const	char	*what() const throw();
+				
+		};
 		Parser( void );
 		Parser( std::string str );
 		~Parser( void );
@@ -41,6 +51,7 @@ class Parser {
 		void				read_content();
 		void				printParse();
 		bool				printError( void );
+		static void			removeZero( std::string & val );
 		std::vector<std::pair<std::string, const IOperand *>> & getParse();
 	private:
 		std::vector<std::pair<std::string, bool>>::iterator verify_instruction( std::string );
@@ -53,12 +64,13 @@ class Parser {
 		std::vector<std::pair<std::string, bool>>				_v;
 		std::vector <Infos>										_type;
 		std::vector <std::pair<std::string, const IOperand *>>	_parse;
-		std::queue<Error>										_queueErr;
+		std::queue<ParserError>										_queueErr;
 
 		static std::string										extractString( std::string , char , char );
 		static int												count_words( std::string );
 		static void												isNumber( std::string val );
-		static void												removeZero( std::string & val );
+		static int												_ln;
+		
 };
 
 # endif

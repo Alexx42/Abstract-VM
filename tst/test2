@@ -1,0 +1,5 @@
+push int16(52)
+push float(47.25)
+add
+dump
+exit

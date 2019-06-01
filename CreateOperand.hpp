@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 18:52:39 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/05/30 23:45:16 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/05/31 21:07:02 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <functional>
 #include <map>
 #include "IOperand.hpp"
+#include "Parser.hpp"
 
 class CreateOperand {
 	public:

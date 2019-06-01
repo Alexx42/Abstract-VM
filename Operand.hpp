@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 18:32:17 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/05/30 23:44:30 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/05/31 22:37:11 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,111 +39,96 @@ class Operand : public IOperand {
 		** Operators
 		*/
 		IOperand const * operator+(IOperand const & rhs) const {
-			Error			err;
 			eOperandType	e = getType() > rhs.getType() ? getType() : rhs.getType();
-			int				precision = getPrecision() > rhs.getPrecision() ? getPrecision() : rhs.getPrecision();
-			static_cast<void>(precision);
-			if (e < FLOAT) {
-				try {
-					long long		val = std::stoll(this->toString()) + std::stoll(this->toString());
-					if (hasOUflow<long long>(val, e)) {
-						err.setError("Overflow | Underflow");
-						throw err;
+			if (getPrecision() < rhs.getPrecision()) return rhs + *this;
+				if (e < FLOAT) {
+					long nb = std::stol(this->toString()) + std::stol(rhs.toString());
+					if (hasOUflow<long long>(nb, e)) {
+						throw std::exception();
 					}
-					const IOperand *res = _cr->createOperand(e, std::to_string(val));
-					return (res);
-				} catch (Error e) {
-					std::cout << e.what() << std::endl;
-				}
-			} else {
-				try {
-					long double		val = std::stold(this->toString()) + std::stold(this->toString());
-					if (hasOUflow<long double>(val, e)) {
-						err.setError("Overflow | Underflow");
-						throw err;
+					return (_cr->createOperand(e, std::to_string(nb)));
+				} else {
+					long double nb = std::stold(this->toString()) + std::stold(rhs.toString());
+					if (hasOUflow<long double>(nb, e)) {
+						throw std::exception();
 					}
-					return (_cr->createOperand(e, std::to_string(val)));
-				} catch (Error e) {
-					std::cout << e.what() << std::endl;
+					return (_cr->createOperand(e, std::to_string(nb)));
 				}
-			}
 			return this;
 		}
 
 		IOperand const * operator-(IOperand const & rhs) const {
-			Error			err;
 			eOperandType	e = getType() > rhs.getType() ? getType() : rhs.getType();
-			int				precision = getPrecision() > rhs.getPrecision() ? getPrecision() : rhs.getPrecision();
-			static_cast<void>(precision);
-			if (e < FLOAT) {
-				try {
-					long long		val = std::stoll(this->toString()) - std::stoll(this->toString());
-					if (hasOUflow<long long>(val, e)) {
-						err.setError("Overflow | Underflow");
-						throw err;
+			if (getPrecision() < rhs.getPrecision()) return rhs - *this;
+			try {
+				if (e < FLOAT) {
+					long nb = std::stol(this->toString()) - std::stol(rhs.toString());
+					if (hasOUflow<long long>(nb, e)) {
+						throw std::exception();
 					}
-					const IOperand *res = _cr->createOperand(e, std::to_string(val));
-					return (res);
-				} catch (Error e) {
-					std::cout << e.what() << std::endl;
+					return (_cr->createOperand(e, std::to_string(nb)));
+				} else {
+					long double nb = std::stold(this->toString()) - std::stold(rhs.toString());
+					if (hasOUflow<long double>(nb, e)) {
+						throw std::exception();
+					}
+					return (_cr->createOperand(e, std::to_string(nb)));
 				}
-			} else {
-				
+			} catch (std::exception e) {
+				std::cout << e.what() << std::endl;
 			}
 			return this;
 		}
 
 		IOperand const * operator*(IOperand const & rhs) const {
-			Error			err;
 			eOperandType	e = getType() > rhs.getType() ? getType() : rhs.getType();
-			int				precision = getPrecision() > rhs.getPrecision() ? getPrecision() : rhs.getPrecision();
-			static_cast<void>(precision);
-			if (e < FLOAT) {
-				try {
-					long long		val = std::stoll(this->toString()) * std::stoll(this->toString());
-					if (hasOUflow<long long>(val, e)) {
-						err.setError("Overflow | Underflow");
-						throw err;
+			if (getPrecision() < rhs.getPrecision()) return rhs * *this;
+			try {
+				if (e < FLOAT) {
+					long nb = std::stol(this->toString()) * std::stol(rhs.toString());
+					if (hasOUflow<long long>(nb, e)) {
+						throw std::exception();
 					}
-					const IOperand *res = _cr->createOperand(e, std::to_string(val));
-					return (res);
-				} catch (Error e) {
-					std::cout << e.what() << std::endl;
+					return (_cr->createOperand(e, std::to_string(nb)));
+				} else {
+					long double nb = std::stold(this->toString()) * std::stold(rhs.toString());
+					if (hasOUflow<long double>(nb, e)) {
+						throw std::exception();
+					}
+					return (_cr->createOperand(e, std::to_string(nb)));
 				}
-			} else {
-				
+			} catch (std::exception e) {
+				std::cout << e.what() << std::endl;
 			}
 			return this;
 		}
 
 		IOperand const * operator/(IOperand const & rhs) const {
-			Error			err;
 			eOperandType	e = getType() > rhs.getType() ? getType() : rhs.getType();
-			int				precision = getPrecision() > rhs.getPrecision() ? getPrecision() : rhs.getPrecision();
-			static_cast<void>(precision);
-			if (e < FLOAT) {
-				try {
-					long long		val = std::stoll(this->toString()) / std::stoll(this->toString());
-					if (hasOUflow<long long>(val, e)) {
-						err.setError("Overflow | Underflow");
-						throw err;
+			if (getPrecision() < rhs.getPrecision()) return rhs / *this;
+			try {
+				if (e < FLOAT) {
+					long nb = std::stol(this->toString()) / std::stol(rhs.toString());
+					if (hasOUflow<long long>(nb, e)) {
+						throw std::exception();
 					}
-					const IOperand *res = _cr->createOperand(e, std::to_string(val));
-					return (res);
-				} catch (Error e) {
-					std::cout << e.what() << std::endl;
+					return (_cr->createOperand(e, std::to_string(nb)));
+				} else {
+					long double nb = std::stold(this->toString()) / std::stold(rhs.toString());
+					if (hasOUflow<long double>(nb, e)) {
+						throw std::exception();
+					}
+					return (_cr->createOperand(e, std::to_string(nb)));
 				}
-			} else {
-				
+			} catch (std::exception e) {
+				std::cout << e.what() << std::endl;
 			}
-			return this;	
+			return this;
 		}
 
 		IOperand const * operator%(IOperand const & rhs) const {
-			Error			err;
 			eOperandType	e = getType() > rhs.getType() ? getType() : rhs.getType();
-			int				precision = getPrecision() > rhs.getPrecision() ? getPrecision() : rhs.getPrecision();
-			static_cast<void>(precision);
+			if (getPrecision() < rhs.getPrecision()) return rhs % *this;
 			if (e < FLOAT) {
 				long long		val = std::stoll(this->toString()) % std::stoll(rhs.toString());
 				return (_cr->createOperand(e, std::to_string(val)));
@@ -160,7 +145,7 @@ class Operand : public IOperand {
 				}
 				return _cr->createOperand(e, std::to_string(mod));
 			}
-			return this;	
+			return this;
 		}
 		template <typename U>
 		bool		hasOUflow(U value, eOperandType e) const {

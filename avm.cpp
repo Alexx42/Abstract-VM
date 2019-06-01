@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 18:06:13 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/05/29 02:35:36 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/05/31 20:59:22 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ int			main(int ac, char **av)
 	else
 		parser = Parser("");
 	parser.read_content();
-	// parser.printParse();
 	if (parser.printError()) {
 		return (1);
 	}

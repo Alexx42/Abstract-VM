@@ -6,11 +6,14 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 18:56:10 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/05/30 00:02:39 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/06/01 00:41:30 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Parser.hpp"
+
+int				Parser::_ln = 1;
+#define ISSPACE(c) (c == ' ' || c == '\n' || c == '\t' || c == '\v' || c == '\f')
 
 std::string		Parser::extractString( std::string source, char start, char end ) {
 	std::size_t begPos;
@@ -44,40 +47,37 @@ void			Parser::removeZero( std::string & val ) {
 }
 
 int				Parser::count_words( std::string str ) {
-	bool inSpaces = true;
-	int numWords = 0;
-	int i = 0;;
+	int	count;
+	int		i;
+
+	i = 0;
+	count = 0;
 	while (str[i])
 	{
-		while (str[i] && std::isspace(str[i]))
-		{
-			inSpaces = true;
-			i++;
+		while (str[i] && ISSPACE(str[i]))
+			i++;;
+		if (str[i] && str[i] == ';') {
+			return count;
 		}
-		if (!str[i])
-			break ;
-		if (inSpaces)
+		if (str[i] && !ISSPACE(str[i]))
 		{
-			numWords++;
-			inSpaces = false;
+			count++;
+			while (str[i] && !ISSPACE(str[i]))
+				i++;
 		}
-		if (str[i])
-			i++;
 	}
-	return numWords;
+	return (count);
 }
 
 void			Parser::isNumber( std::string str ) {
 	int			count_dot;
 	int			count_neg;
-	Error		err;
 
 	count_dot = 0;
 	count_neg = 0;
 	for (int i = 0; str[i]; i++) {
 		if (str[i] == ';') {
-			err.setError("Syntax error : ';' found near value");
-			throw err;
+			throw ParserError(" ';' found near value", "Syntax Error", _ln);
 		}
 		if (!std::isdigit(str[i]) && str[i] != '.' && str[i] != '-')
 			throw std::invalid_argument("");
@@ -88,13 +88,12 @@ void			Parser::isNumber( std::string str ) {
 		}
 	}
 	if (count_dot > 1 || count_neg > 1) {
-		err.setError("Syntax error : Invalid value");
-		throw err;
+		throw ParserError("Invalid value", "Syntax error", _ln);
 	}
 }
 
+
 Parser::Parser( std::string str ) : _str(str) {
-	
 	return ;
 }
 
@@ -115,6 +114,32 @@ Parser::Parser( Parser const & rhs ) {
 Parser & Parser::operator=( Parser const & rhs ) {
 	_str = rhs._str;
 	return *this;
+}
+
+Parser::ParserError::ParserError( std::string error, std::string type, int ln ) : Error(error, type, ln) {
+	return ;
+}
+
+Parser::ParserError::~ParserError( void ) {
+	return ;
+}
+
+Parser::ParserError::ParserError(Parser::ParserError const & rhs) : Error(rhs) {
+	static_cast<void>(rhs);
+}
+
+Parser::ParserError & Parser::ParserError::operator=(Parser::ParserError const & rhs) {
+	static_cast<void>(rhs);
+	return *this;
+}
+
+const char *Parser::ParserError::what() const throw() {
+	std::ostringstream	ss;
+	std::string			res;
+	ss << "Line " << _ln << ": ";
+	ss << _type << ": " << _error << std::endl;
+	res = ss.str();
+	return res.c_str();
 }
 
 void			Parser::initVector( void ) {
@@ -157,15 +182,13 @@ eOperandType		Parser::getEnumValue( std::string type ) {
 
 
 std::string		Parser::verify_value( std::string val, eOperandType e ) {
-	Error			err;
 	std::string		str_p;
 	double			nb;
 	char			p_op;
 	char			p_cl;
 	str_p = extractString(val, '(', ')');
 	if (str_p.empty()) {
-		err.setError("Missing ')'");
-		throw err;
+		throw ParserError("Missing ')'", "Syntax Error", _ln);
 	}
 	p_op = 0;
 	p_cl = 0;
@@ -173,8 +196,7 @@ std::string		Parser::verify_value( std::string val, eOperandType e ) {
 		if (!isspace(c) && p_cl > 0) {
 			if (c == ';')
 				break ;
-			err.setError("Syntax error after ')'");
-			throw err;
+			throw ParserError("after ')'", "Syntax Error", _ln);
 		}
 		if (c == '(')
 			p_op++;
@@ -182,8 +204,7 @@ std::string		Parser::verify_value( std::string val, eOperandType e ) {
 			p_cl++;
 	}
 	if (p_cl != 1 || p_op != 1) {
-		err.setError("Invalid number of parentheses");
-		throw err;
+		throw ParserError("Invalid number of parentheses", "Syntax Error", _ln);
 	}
 	try {
 		isNumber(str_p);
@@ -192,54 +213,43 @@ std::string		Parser::verify_value( std::string val, eOperandType e ) {
 		removeZero(cmp);
 		if (cmp != str_p) {
 			if (str_p[0] == '-') {
-				err.setError("Underflow");
+				throw ParserError("Underflow", "Runtime Error", _ln);
 			} else {
-				err.setError("Overflow");
+				throw ParserError("Overflow", "Runtime Error", _ln);
 			}
-			throw err;
 		}
 		if (nb > _type.at(e).max) {
-			err.setError("Overflow");
-			throw err;
+			throw ParserError("Overflow", "Runtime Error", _ln);
 		} else if (nb < _type.at(e).min) {
-			std::cout << "val = " << nb << std::endl;
-			err.setError("Underflow");
-			throw err;
+			throw ParserError("Underflow", "Runtime Error", _ln);
 		}
-	} catch (std::out_of_range e) {
-		err.setError(e.what());
-		throw err;
 	} catch (std::invalid_argument) {
-		err.setError("Invalid value");
-		throw err;
+		throw ParserError("Invalid value", "Syntax Error", _ln);
 	}
 	return (str_p);
 }
 
 IOperand		const *Parser::verify_type( std::vector<std::pair<std::string, bool>>::iterator it, std::string str ) {
-	Error					err;
 	size_t					find_s;
 	std::string				nb;
 	eOperandType			e;
 	CreateOperand			op;
 
 	find_s = str.find(' ');
-	if (count_words(str) != 1 + it->second || (find_s != std::string::npos && it->second == false) || (find_s == std::string::npos && it->second == true))
+	if (count_words(str) != 1 + it->second)
 	{
-		err.setError("Wrong number of arguments");
-		throw err;
+		std::cout << count_words(str);
+		throw ParserError("Invalid number of arguments", "Syntax Error", _ln);
 	}
 	if (it->second == false)
 		return nullptr;
 	std::string type = extractString(str, ' ', '(');
 	if (type.find(';') != std::string::npos) {
-		err.setError("Syntax error : ';' found near type");
-		throw err;
+		throw ParserError("';' found near type", "Syntax Error", _ln);
 	}
 	type.erase(remove(type.begin(), type.end(), ' '), type.end()); 
 	if (type.empty()) {
-		err.setError("Missing '('");
-		throw err;
+		throw ParserError("Missing '('", "Syntax Error", _ln);
 	}
 	std::vector<Infos>::iterator it_type = _type.begin();
 	for (; it_type != _type.end(); it_type++) {
@@ -250,8 +260,7 @@ IOperand		const *Parser::verify_type( std::vector<std::pair<std::string, bool>>:
 		}
 	}
 	if (it_type == _type.end()) {
-		err.setError("Invalid type");
-		throw err;
+		throw ParserError("Invalid type", "Syntax Error", _ln);
 	}
 	return (0);
 }
@@ -259,18 +268,17 @@ IOperand		const *Parser::verify_type( std::vector<std::pair<std::string, bool>>:
 std::vector<std::pair<std::string, bool>>::iterator Parser::verify_instruction( std::string line ) {
 	std::size_t index = line.find(' ');
 	std::string instr;
-	Error 		err;
 
 	if (index != std::string::npos)
 		instr = line.substr(0, index);
 	else
 		instr = line;
+	instr.erase(remove(instr.begin(), instr.end(), ' '), instr.end());
 	for (std::vector<std::pair<std::string, bool>>::iterator it = _v.begin(); it != _v.end(); it++) {
 		if ((it)->first == instr)
 			return (it);
 	}
-	err.setError("Bad instruction");
-	throw err;
+	throw ParserError("Invalid instruction", "Syntax Error", _ln);
 }
 
 
@@ -294,7 +302,7 @@ bool		Parser::printError( void ) {
 
 	is_err = false;
 	while (!_queueErr.empty()) {
-		Error err = _queueErr.front();
+		ParserError err = _queueErr.front();
 		std::cout << err.what() << std::endl;
 		_queueErr.pop();
 		is_err = true;
@@ -304,7 +312,6 @@ bool		Parser::printError( void ) {
 
 void			Parser::read_content( void ) {
 	std::string		line;
-	Error			err;
 	IOperand const	*op;
 	std::ifstream	file;
 	bool			_exit;
@@ -325,16 +332,15 @@ void			Parser::read_content( void ) {
 			_parse.push_back(std::make_pair(it->first, op));
 			if (it->first == "exit") {
 				_exit = true;
-				break ;
 			}
-		} catch (Error e) {
+		} catch (ParserError & e) {
 			_queueErr.push(e);
 		}
+		_ln++;
 	}
-	if (!_exit) {
-		err.setError("No exit instruction");
-		_queueErr.push(err);
-	}
+	// if (!_exit) {
+	// 	_queueErr.push(ParserError("Missing Exit instruction", "Syntax error", -1));
+	// }
 	if (file.is_open())
 		file.close();
 }

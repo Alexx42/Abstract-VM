@@ -6,13 +6,13 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 18:59:49 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/05/27 19:27:43 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/06/01 00:31:03 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Error.hpp"
 
-Error::Error( void ) {
+Error::Error( std::string err, std::string type, int ln )  : _error(err), _type(type), _ln(ln) {
 	;
 }
 
@@ -30,11 +30,3 @@ Error & Error::operator=(Error const & rhs) {
 	return *this;
 }
 
-void		Error::setError( std::string err ) {
-	_error = err;
-	return ;
-}
-
-const char	*Error::what( void ) const throw() {
-	return _error.c_str();
-}

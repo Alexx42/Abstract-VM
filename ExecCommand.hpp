@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/29 00:00:19 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/05/29 23:46:15 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/06/01 00:36:09 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,14 @@ enum eCommands {
 
 class ExecCommand {
 	public:
+		class ExecError : public Error {
+			public:
+				ExecError( std::string err, std::string type, int ln );
+				virtual ~ExecError( void ) ;
+				ExecError( ExecError const & rhs );
+				ExecError & operator=( ExecError const & rhs );
+				virtual const char	*what() const throw();
+		};
 		ExecCommand( std::vector<std::pair<std::string, const IOperand*>>);
 		~ExecCommand( void );
 		ExecCommand( ExecCommand const & rhs);
@@ -56,7 +64,7 @@ class ExecCommand {
 			std::string		e_val;
 			t_command_fn	fn;
 		}					t_exec;
-
+		static int												_ln;
 		t_exec		execFn[11];
 };
 
