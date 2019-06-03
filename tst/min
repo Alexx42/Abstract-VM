@@ -1,0 +1,5 @@
+push int32(150)
+push int8(120)
+min
+exit
+;;

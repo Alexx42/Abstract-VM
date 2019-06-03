@@ -6,15 +6,15 @@
 #    By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/05/04 21:33:09 by ale-goff          #+#    #+#              #
-#    Updated: 2019/05/29 02:24:04 by ale-goff         ###   ########.fr        #
+#    Updated: 2019/06/02 20:57:18 by ale-goff         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 
 NAME = avm
 
-SRCS = avm.cpp Error.cpp Parser.cpp CreateOperand.cpp ExecCommand.cpp
-OBJ =  avm.o Error.o Parser.o CreateOperand.o ExecCommand.o
+SRCS = avm.cpp Error.cpp Parser.cpp CreateOperand.cpp ExecCommand.cpp Flags.cpp
+OBJ =  avm.o Error.o Parser.o CreateOperand.o ExecCommand.o Flags.o
 
 CXX = clang++
 CXXFLAGS = -g3 -Wall -Werror -Wextra -std=c++11

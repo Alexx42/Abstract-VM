@@ -1,35 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Error.cpp                                          :+:      :+:    :+:   */
+/*   Flags.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/05/27 18:59:49 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/06/02 15:48:35 by ale-goff         ###   ########.fr       */
+/*   Created: 2019/06/02 20:45:01 by ale-goff          #+#    #+#             */
+/*   Updated: 2019/06/02 21:24:47 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Error.hpp"
+#ifndef FLAGS_HPP
+# define FLAGS_HPP
 
-Error::Error( const std::string & err)  : _error(err) {
-	;
-}
+#include <iostream>
+#include <string>
 
-Error::~Error( void ) throw() {
-	;
-}
+class Flags {
+	public:
+		Flags( char **str );
+		~Flags( void );
+		Flags( Flags const & rhs );
+		Flags & operator=(Flags const & rhs);
 
-Error::Error(Error const & rhs) {
-	*this = rhs;
-	return ;
-}
+		void		parserStr( void );
+		int			getNbFlags( void );
+		int			getDebug( void );
+	private:
+		char		**_str;
+		int			_h;
+		int			_d;
+		int			_nbFlags;
+		void		printHelp( void );
+};
 
-Error & Error::operator=(Error const & rhs) {
-	this->_error = rhs._error;
-	return *this;
-}
 
-const char *Error::what() const throw() {
-	return _error.c_str();
-}
+# endif

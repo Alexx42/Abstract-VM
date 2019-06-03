@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/29 00:00:03 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/06/01 00:32:51 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/06/02 20:42:55 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,10 @@ ExecCommand::ExecCommand( std::vector<std::pair<std::string, const IOperand *>> 
 	execFn[5] = {Assert, 	{"assert"}, 	&ExecCommand::assert_s};
 	execFn[6] = {Print, 	{"print"}, 		&ExecCommand::print_s};
 	execFn[7] = {Pop, 		{"pop"}, 		&ExecCommand::pop_s};
-	execFn[8] = {Div, 		{"pop"}, 		&ExecCommand::pop_s};
-	execFn[9] = {Dump, 		{"dump"}, 		&ExecCommand::dump_s};
-	execFn[10] = {Exit, 	{"exit"}, 		&ExecCommand::exit_s};
+	execFn[8] = {Max, 		{"max"}, 		&ExecCommand::max_s};
+	execFn[9] = {Min, 		{"min"}, 		&ExecCommand::min_s};
+	execFn[10] = {Dump, 	{"dump"}, 		&ExecCommand::dump_s};
+	execFn[11] = {Exit, 	{"exit"}, 		&ExecCommand::exit_s};
 }
 
 ExecCommand::~ExecCommand( void )
@@ -42,7 +43,7 @@ ExecCommand & ExecCommand::operator=(ExecCommand const & rhs) {
 	return *this;
 }
 
-ExecCommand::ExecError::ExecError( std::string error, std::string type, int ln ) : Error(error, type, ln) {
+ExecCommand::ExecError::ExecError( const std::string & error ) : Error(error) {
 	return ;
 }
 
@@ -54,14 +55,6 @@ ExecCommand::ExecError::ExecError(ExecCommand::ExecError const & rhs) : Error(rh
 	static_cast<void>(rhs);
 }
 
-const	char		*ExecCommand::ExecError::what() const throw() {
-	std::stringstream	ss;
-	std::string			res;
-	ss << "Line " << _ln << ": ";
-	ss << _type << ": " << _error << std::endl;
-	res = ss.str();
-	return res.c_str();
-}
 
 ExecCommand::ExecError & ExecCommand::ExecError::operator=(ExecCommand::ExecError const & rhs) {
 	static_cast<void>(rhs);
@@ -75,32 +68,32 @@ void		ExecCommand::push_s( const IOperand * rhs ) {
 void		ExecCommand::mul_s( IOperand const * rhs ) {
 	static_cast<void>(rhs);
 	if (_s.size() < 2) {
-		throw ExecError("Stack size is less than 2", "Runtime error", _ln);
+		throw ExecError("Runtime Error : Stack size is less than 2");
 	}
 	IOperand const *v1 = (_s.back());
 	_s.pop_back();
 	IOperand const *v2 = (_s.back());
 	_s.pop_back();
-	_s.push_back(*v1 * *v2);
+	_s.push_back(*v2 * *v1);
 }
 
 void		ExecCommand::mod_s( IOperand const * rhs ) {
 	static_cast<void>(rhs);
 	if (_s.size() < 2) {
-		throw ExecError("Stack size is less than 2", "Runtime error", _ln);
+		throw ExecError("Runtime Error : Stack size is less than 2");
 	}
 	IOperand const *v1 = (_s.back());
 	_s.pop_back();
 	IOperand const *v2 = (_s.back());
 	_s.pop_back();
-	_s.push_back(*v1 % *v2);
+	_s.push_back(*v2 % *v1);
 }
 
 void		ExecCommand::pop_s( IOperand const * rhs ) {
 
 	static_cast<void>(rhs);
 	if (_s.empty()) {
-		throw ExecError("Stack is empty", "Runtime Error", _ln);
+		throw ExecError("Runtime Error : Stack is empty");
 	} else { 
 		_s.pop_back();
 	}
@@ -109,50 +102,89 @@ void		ExecCommand::pop_s( IOperand const * rhs ) {
 void		ExecCommand::div_s( IOperand const * rhs ) {
 	static_cast<void>(rhs);
 	if (_s.size() < 2) {
-		throw ExecError("Stack size is less than 2", "Runtime error", _ln);
+		throw ExecError("Runtime Error : Stack size is less than 2");
 	}
 	IOperand const *v1 = (_s.back());
 	_s.pop_back();
 	IOperand const *v2 = (_s.back());
+	if (v1->toString() == "0") {
+		throw ExecError("Runtime Error : Division by 0");
+	}
 	_s.pop_back();
-	_s.push_back(*v1 / *v2);
+	_s.push_back(*v2 / *v1);
+}
+
+void		ExecCommand::max_s( IOperand const * rhs ) {
+	static_cast<void>(rhs);
+	double		max;
+	if (_s.size() < 1) {
+		throw ExecError("Runtime Error : Stack is empty");
+	}
+	std::vector< const IOperand *>::iterator	it = _s.begin();
+	max = std::stod((*it)->toString());
+	while (it != _s.end())
+	{
+		if (std::stod((*it)->toString()) > max) {
+			max = std::stod((*it)->toString());
+		}
+		it++;
+	}
+	std::cout << max << std::endl;
+}
+
+void		ExecCommand::min_s( IOperand const * rhs ) {
+	static_cast<void>(rhs);
+	double		min;
+	if (_s.size() < 1) {
+		throw ExecError("Runtime Error : Stack is empty");
+	}
+	std::vector< const IOperand *>::iterator	it = _s.begin();
+	min = std::stod((*it)->toString());
+	while (it != _s.end())
+	{
+		if (std::stod((*it)->toString()) < min) {
+			min = std::stod((*it)->toString());
+		}
+		it++;
+	}
+	std::cout << min << std::endl;
 }
 
 void		ExecCommand::sub_s( IOperand const * rhs ) {
 	static_cast<void>(rhs);
 	if (_s.size() < 2) {
-		throw ExecError("Stack size is less than 2", "Runtime error", _ln);
+		throw ExecError("Runtime Error : Stack size is less than 2");
 	}
 	IOperand const *v1 = (_s.back());
 	_s.pop_back();
 	IOperand const *v2 = (_s.back());
 	_s.pop_back();
-	_s.push_back(*v1 / *v2);
+	_s.push_back(*v2 / *v1);
 }
 
 void		ExecCommand::add_s( IOperand const * rhs ) {
 	static_cast<void>(rhs);
 	if (_s.size() < 2) {
-		throw ExecError("Stack size is less than 2", "Runtime error", _ln);
+		throw ExecError("Runtime Error : Stack size is less than 2");
 	}
 	IOperand const *v1 = (_s.back());
 	_s.pop_back();
 	IOperand const *v2 = (_s.back());
 	_s.pop_back();
 	try {
-		_s.push_back(*v1 + *v2);
+		_s.push_back(*v2 + *v1);
 	} catch (ExecError e) {
-		throw ExecError("Overflow - Underflow", "Runtime Error", _ln);
+		throw ExecError("Runtime Error : Overflow - Underflow");
 	}
 }
 
 void		ExecCommand::print_s( IOperand const * rhs ) {
 	static_cast<void>(rhs);
 	if (_s.back()->getType() != INT8 || _s.empty()) {
-		throw ExecError("Top stack type is not int8", "Runtime error", _ln);
+		throw ExecError("Runtime Error Top stack type is not int8");
 	} else {
 		const char *pr = _s.back()->toString().c_str();
-		std::cout << static_cast<char>(*pr) << std::endl;
+		std::cout << static_cast<char>(std::atoi(pr)) << std::endl;
 	}
 }
 
@@ -160,12 +192,12 @@ void		ExecCommand::assert_s( IOperand const * rhs ) {
 	std::string		nb1;
 	std::string		nb2;
 	if (_s.empty() || !rhs) {
-		throw ExecError("Assert failed", "Runtime Error", _ln);
+		throw ExecError("Runtime Error : Assert failed");
 	} else {
 		nb1 = _s.back()->toString();
 		nb2 = rhs->toString();
 		if (nb1 != nb2) {
-			throw ExecError("Assert failed", "Runtime Error", _ln);
+			throw ExecError("Runtime Error : Assert failed");
 		}
 	}
 }
@@ -193,7 +225,7 @@ void		ExecCommand::execCommands( void ) {
 				try {
 					(*this.*execFn[i].fn)(it->second);
 					break ;
-				} catch (ExecError e) {
+				} catch (ExecError & e) {
 					std::cout << e.what() << std::endl;
 					break ;
 				}

@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 18:56:20 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/06/01 00:37:50 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/06/02 20:11:10 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,22 +26,20 @@
 #include <fstream>
 
 struct	Infos {
-	std::string type;
-	double		min;
-	double		max;
+	eOperandType	e;
+	std::string		type;
+	double			min;
+	double			max;
 };
 
 class Parser {
 	public:
 		class ParserError : public Error {
 			public:
-				ParserError( std::string err, std::string type, int ln );
-				virtual ~ParserError( void ) ;
+				ParserError( const std::string & err );
+				virtual ~ParserError( void ) throw();
 				ParserError( ParserError const & rhs );
 				ParserError & operator=( ParserError const & rhs );
-
-				const	char	*what() const throw();
-				
 		};
 		Parser( void );
 		Parser( std::string str );
@@ -58,13 +56,12 @@ class Parser {
 		IOperand const		*verify_type( std::vector<std::pair<std::string, bool>>::iterator , std::string );
 		std::string			verify_value( std::string, eOperandType );
 		void				initVector();
-		eOperandType		getEnumValue( std::string );
 
 		std::string 											_str;
 		std::vector<std::pair<std::string, bool>>				_v;
 		std::vector <Infos>										_type;
 		std::vector <std::pair<std::string, const IOperand *>>	_parse;
-		std::queue<ParserError>										_queueErr;
+		std::queue<ParserError>									_queueErr;
 
 		static std::string										extractString( std::string , char , char );
 		static int												count_words( std::string );

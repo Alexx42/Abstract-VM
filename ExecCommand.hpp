@@ -6,34 +6,34 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/29 00:00:19 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/06/01 00:36:09 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/06/02 20:40:27 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef EXECCOMMAND_HPP
-# define EXECCOMMAND_HPP
+#ifndef EXEC_COMMAND_HPP
+# define EXEC_COMMAND_HPP
 
 #include <vector>
 #include <map>
 #include <functional>
 #include "Error.hpp"
-#include "Operand.hpp"
+#include "IOperand.hpp"
 
 enum eCommands {
 	Add, Sub, Push, Mod,
 	Mul, Assert, Print,
-	Pop, Div, Dump, Exit
+	Max, Min, Pop, Div,
+	Dump, Exit
 };
 
 class ExecCommand {
 	public:
 		class ExecError : public Error {
 			public:
-				ExecError( std::string err, std::string type, int ln );
+				ExecError( const std::string & err );
 				virtual ~ExecError( void ) ;
 				ExecError( ExecError const & rhs );
 				ExecError & operator=( ExecError const & rhs );
-				virtual const char	*what() const throw();
 		};
 		ExecCommand( std::vector<std::pair<std::string, const IOperand*>>);
 		~ExecCommand( void );
@@ -50,6 +50,8 @@ class ExecCommand {
 		void		sub_s( IOperand const * );
 		void		mod_s( IOperand const * );
 		void		div_s( IOperand const * );
+		void		max_s( IOperand const * );
+		void		min_s( IOperand const * );
 		void		mul_s( IOperand const * );
 		void		assert_s( IOperand const * );
 		void		exit_s( IOperand const * );
@@ -65,7 +67,7 @@ class ExecCommand {
 			t_command_fn	fn;
 		}					t_exec;
 		static int												_ln;
-		t_exec		execFn[11];
+		t_exec													execFn[13];
 };
 
 # endif

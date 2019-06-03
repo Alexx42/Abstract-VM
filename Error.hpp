@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 18:57:08 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/06/01 00:36:47 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/06/02 15:48:21 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,14 +20,13 @@
 
 class Error : std::exception {
 	public:
-		Error( std::string err, std::string type, int ln );
+		Error( const std::string & err );
 		virtual ~Error( void ) throw();
 		Error(Error const & rhs);
 		Error & operator=(Error const & rhs);
+		virtual const char	*what() const throw();
 	protected:
 		std::string _error;
-		std::string	_type;
-		int			_ln;
 };
 
 # endif

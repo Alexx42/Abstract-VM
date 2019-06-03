@@ -6,25 +6,24 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 18:32:17 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/05/31 22:37:11 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/06/02 20:01:40 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef OPERAND_HPP
 # define OPERAND_HPP
-# define DBL_MIN std::numeric_limits<float>::lowest()
-# define DBL_MAX -DBL_MIN
-# define FLT_MIN std::numeric_limits<float>::lowest()
-# define FLT_MAX -FLT_MIN
+# define DBL_MAX std::numeric_limits<double>::max()
+# define DBL_MIN -DBL_MAX
+# define FLT_MAX std::numeric_limits<float>::max()
+# define FLT_MIN -FLT_MAX
 #include "IOperand.hpp"
+#include "ExecCommand.hpp"
 #include "CreateOperand.hpp"
-#include "Error.hpp"
 
-// class CreateOperand;
 template <typename T>
 class Operand : public IOperand {
 	public:
-		Operand( std::string val, int precision, eOperandType type) 
+		Operand( std::string val, int precision, eOperandType type)
 		: _val(val), _precision(precision), _type(type){_cr = new CreateOperand;}
 		~Operand( void ) {;}
 		Operand(Operand const & rhs) {*this = rhs;}
@@ -44,13 +43,13 @@ class Operand : public IOperand {
 				if (e < FLOAT) {
 					long nb = std::stol(this->toString()) + std::stol(rhs.toString());
 					if (hasOUflow<long long>(nb, e)) {
-						throw std::exception();
+						throw ExecCommand::ExecError("Overflow | Underflow");
 					}
 					return (_cr->createOperand(e, std::to_string(nb)));
 				} else {
 					long double nb = std::stold(this->toString()) + std::stold(rhs.toString());
 					if (hasOUflow<long double>(nb, e)) {
-						throw std::exception();
+						throw ExecCommand::ExecError("Overflow | Underflow");
 					}
 					return (_cr->createOperand(e, std::to_string(nb)));
 				}
@@ -64,13 +63,13 @@ class Operand : public IOperand {
 				if (e < FLOAT) {
 					long nb = std::stol(this->toString()) - std::stol(rhs.toString());
 					if (hasOUflow<long long>(nb, e)) {
-						throw std::exception();
+						throw ExecCommand::ExecError("Overflow | Underflow");
 					}
 					return (_cr->createOperand(e, std::to_string(nb)));
 				} else {
 					long double nb = std::stold(this->toString()) - std::stold(rhs.toString());
 					if (hasOUflow<long double>(nb, e)) {
-						throw std::exception();
+						throw ExecCommand::ExecError("Overflow | Underflow");
 					}
 					return (_cr->createOperand(e, std::to_string(nb)));
 				}
@@ -87,13 +86,15 @@ class Operand : public IOperand {
 				if (e < FLOAT) {
 					long nb = std::stol(this->toString()) * std::stol(rhs.toString());
 					if (hasOUflow<long long>(nb, e)) {
-						throw std::exception();
+						throw ExecCommand::ExecError("Overflow | Underflow");
 					}
 					return (_cr->createOperand(e, std::to_string(nb)));
 				} else {
 					long double nb = std::stold(this->toString()) * std::stold(rhs.toString());
+					std::cout << "nb = " << nb << std::endl;
+					std::cout << "max = " << FLT_MAX << std::endl;
 					if (hasOUflow<long double>(nb, e)) {
-						throw std::exception();
+						throw ExecCommand::ExecError("Overflow | Underflow");
 					}
 					return (_cr->createOperand(e, std::to_string(nb)));
 				}
@@ -110,13 +111,13 @@ class Operand : public IOperand {
 				if (e < FLOAT) {
 					long nb = std::stol(this->toString()) / std::stol(rhs.toString());
 					if (hasOUflow<long long>(nb, e)) {
-						throw std::exception();
+						throw ExecCommand::ExecError("Overflow | Underflow");
 					}
 					return (_cr->createOperand(e, std::to_string(nb)));
 				} else {
 					long double nb = std::stold(this->toString()) / std::stold(rhs.toString());
 					if (hasOUflow<long double>(nb, e)) {
-						throw std::exception();
+						throw ExecCommand::ExecError("Overflow | Underflow");
 					}
 					return (_cr->createOperand(e, std::to_string(nb)));
 				}
@@ -135,7 +136,6 @@ class Operand : public IOperand {
 			} else {
 				double a = std::stod(toString());
 				double b = std::stod(rhs.toString());
-				
 				double mod = a;
 				while (mod >= b) {
 					mod = mod - b;

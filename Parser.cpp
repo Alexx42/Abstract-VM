@@ -6,13 +6,14 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 18:56:10 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/06/01 00:41:30 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/06/02 22:14:38 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Parser.hpp"
 
-int				Parser::_ln = 1;
+int	Parser::_ln = 1;
+
 #define ISSPACE(c) (c == ' ' || c == '\n' || c == '\t' || c == '\v' || c == '\f')
 
 std::string		Parser::extractString( std::string source, char start, char end ) {
@@ -26,6 +27,12 @@ std::string		Parser::extractString( std::string source, char start, char end ) {
 			std::string result = source.substr(begPos+1, endPos-begPos-1) ;
 			return result ;
 		}
+		else {
+			throw ParserError("Syntax Error : Missing ')'");
+		}
+	}
+	else {
+		throw ParserError("Syntax Error : Missing '('");
 	}
 	return std::string() ;
 }
@@ -77,7 +84,7 @@ void			Parser::isNumber( std::string str ) {
 	count_neg = 0;
 	for (int i = 0; str[i]; i++) {
 		if (str[i] == ';') {
-			throw ParserError(" ';' found near value", "Syntax Error", _ln);
+			throw ParserError("Syntax Error : ';' found near value");
 		}
 		if (!std::isdigit(str[i]) && str[i] != '.' && str[i] != '-')
 			throw std::invalid_argument("");
@@ -88,7 +95,7 @@ void			Parser::isNumber( std::string str ) {
 		}
 	}
 	if (count_dot > 1 || count_neg > 1) {
-		throw ParserError("Invalid value", "Syntax error", _ln);
+		throw ParserError("Syntax Error : Invalid value");
 	}
 }
 
@@ -116,11 +123,11 @@ Parser & Parser::operator=( Parser const & rhs ) {
 	return *this;
 }
 
-Parser::ParserError::ParserError( std::string error, std::string type, int ln ) : Error(error, type, ln) {
+Parser::ParserError::ParserError( const std::string & error ) : Error(error) {
 	return ;
 }
 
-Parser::ParserError::~ParserError( void ) {
+Parser::ParserError::~ParserError( void ) throw() {
 	return ;
 }
 
@@ -133,17 +140,11 @@ Parser::ParserError & Parser::ParserError::operator=(Parser::ParserError const &
 	return *this;
 }
 
-const char *Parser::ParserError::what() const throw() {
-	std::ostringstream	ss;
-	std::string			res;
-	ss << "Line " << _ln << ": ";
-	ss << _type << ": " << _error << std::endl;
-	res = ss.str();
-	return res.c_str();
-}
 
 void			Parser::initVector( void ) {
 	_v.push_back(std::make_pair("push", true));
+	_v.push_back(std::make_pair("max", false));
+	_v.push_back(std::make_pair("min", false));
 	_v.push_back(std::make_pair("pop", false));
 	_v.push_back(std::make_pair("assert", true));
 	_v.push_back(std::make_pair("dump", false));
@@ -155,11 +156,11 @@ void			Parser::initVector( void ) {
 	_v.push_back(std::make_pair("exit", false));
 	_v.push_back(std::make_pair("mod", false));
 
-	_type.push_back({"int8", INT8_MIN, INT8_MAX});
-	_type.push_back({"int16", INT16_MIN, INT16_MAX});
-	_type.push_back({"int32", INT32_MIN, INT32_MAX});
-	_type.push_back({"float", std::numeric_limits<float>::lowest(),  std::numeric_limits<float>::max()});
-	_type.push_back({"double", std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max()});
+	_type.push_back({INT8, "int8", INT8_MIN, INT8_MAX});
+	_type.push_back({INT16, "int16", INT16_MIN, INT16_MAX});
+	_type.push_back({INT32, "int32", INT32_MIN, INT32_MAX});
+	_type.push_back({FLOAT, "float", std::numeric_limits<float>::lowest(),  std::numeric_limits<float>::max()});
+	_type.push_back({DOUBLE, "double", std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max()});
 
 }
 
@@ -167,28 +168,18 @@ std::vector<std::pair<std::string, const IOperand *>> & Parser::getParse() {
 	return _parse;
 }
 
-eOperandType		Parser::getEnumValue( std::string type ) {
-	if (type == "int8")
-		return INT8;
-	else if (type == "int16")
-		return INT16;
-	else if (type == "int32")
-		return INT32;
-	else if (type == "float")
-		return FLOAT;
-	else
-		return DOUBLE;
-}
-
-
 std::string		Parser::verify_value( std::string val, eOperandType e ) {
 	std::string		str_p;
 	double			nb;
 	char			p_op;
 	char			p_cl;
-	str_p = extractString(val, '(', ')');
+	try {
+		str_p = extractString(val, '(', ')');
+	} catch (ParserError & e) {
+		std::cout << e.what() << std::endl;
+	}
 	if (str_p.empty()) {
-		throw ParserError("Missing ')'", "Syntax Error", _ln);
+		throw ParserError("Syntax Error : Invalid Value");
 	}
 	p_op = 0;
 	p_cl = 0;
@@ -196,7 +187,7 @@ std::string		Parser::verify_value( std::string val, eOperandType e ) {
 		if (!isspace(c) && p_cl > 0) {
 			if (c == ';')
 				break ;
-			throw ParserError("after ')'", "Syntax Error", _ln);
+			throw ParserError("Syntax Error : after ')'");
 		}
 		if (c == '(')
 			p_op++;
@@ -204,7 +195,7 @@ std::string		Parser::verify_value( std::string val, eOperandType e ) {
 			p_cl++;
 	}
 	if (p_cl != 1 || p_op != 1) {
-		throw ParserError("Invalid number of parentheses", "Syntax Error", _ln);
+		throw ParserError("Syntax Error : Invalid number of parentheses");
 	}
 	try {
 		isNumber(str_p);
@@ -213,18 +204,18 @@ std::string		Parser::verify_value( std::string val, eOperandType e ) {
 		removeZero(cmp);
 		if (cmp != str_p) {
 			if (str_p[0] == '-') {
-				throw ParserError("Underflow", "Runtime Error", _ln);
+				throw ParserError("Runtime Error : Underflow");
 			} else {
-				throw ParserError("Overflow", "Runtime Error", _ln);
+				throw ParserError("Runtime Error : Overflow");
 			}
 		}
 		if (nb > _type.at(e).max) {
-			throw ParserError("Overflow", "Runtime Error", _ln);
+			throw ParserError("Runtime Error : Overflow");
 		} else if (nb < _type.at(e).min) {
-			throw ParserError("Underflow", "Runtime Error", _ln);
+			throw ParserError("Runtime Error : Underflow");
 		}
 	} catch (std::invalid_argument) {
-		throw ParserError("Invalid value", "Syntax Error", _ln);
+		throw ParserError("Syntax Error : Invalid value");
 	}
 	return (str_p);
 }
@@ -232,35 +223,30 @@ std::string		Parser::verify_value( std::string val, eOperandType e ) {
 IOperand		const *Parser::verify_type( std::vector<std::pair<std::string, bool>>::iterator it, std::string str ) {
 	size_t					find_s;
 	std::string				nb;
-	eOperandType			e;
 	CreateOperand			op;
 
 	find_s = str.find(' ');
 	if (count_words(str) != 1 + it->second)
-	{
-		std::cout << count_words(str);
-		throw ParserError("Invalid number of arguments", "Syntax Error", _ln);
-	}
+		throw ParserError("Syntax Error : Invalid number of arguments");
 	if (it->second == false)
 		return nullptr;
 	std::string type = extractString(str, ' ', '(');
 	if (type.find(';') != std::string::npos) {
-		throw ParserError("';' found near type", "Syntax Error", _ln);
+		throw ParserError("Syntax Error : ';' found near type");
 	}
 	type.erase(remove(type.begin(), type.end(), ' '), type.end()); 
 	if (type.empty()) {
-		throw ParserError("Missing '('", "Syntax Error", _ln);
+		throw ParserError("Syntax Error : Invalid type");
 	}
 	std::vector<Infos>::iterator it_type = _type.begin();
 	for (; it_type != _type.end(); it_type++) {
 		if (type == it_type->type) {
-			e = getEnumValue( type );
-			nb = verify_value( str, e );
-			return op.createOperand(e, nb);
+			nb = verify_value( str, it_type->e );
+			return op.createOperand( it_type->e, nb );
 		}
 	}
 	if (it_type == _type.end()) {
-		throw ParserError("Invalid type", "Syntax Error", _ln);
+		throw ParserError("Syntax Error : Invalid type");
 	}
 	return (0);
 }
@@ -278,15 +264,15 @@ std::vector<std::pair<std::string, bool>>::iterator Parser::verify_instruction( 
 		if ((it)->first == instr)
 			return (it);
 	}
-	throw ParserError("Invalid instruction", "Syntax Error", _ln);
+	throw ParserError("Syntax Error : Invalid instruction");
 }
 
 
 void			Parser::printParse( void ) {
 	std::vector<std::pair<std::string, const IOperand*>>::iterator it;
 
-	it = _parse.begin();
-	while (it != _parse.end()) {
+	it = this->_parse.begin();
+	while (it != this->_parse.end()) {
 		std::cout << "------LINE------" << std::endl;
 		std::cout << "{" << it->first << "}	";
 		if (it->second)
@@ -299,7 +285,6 @@ void			Parser::printParse( void ) {
 
 bool		Parser::printError( void ) {
 	bool		is_err;
-
 	is_err = false;
 	while (!_queueErr.empty()) {
 		ParserError err = _queueErr.front();
@@ -318,6 +303,10 @@ void			Parser::read_content( void ) {
 
 	if (!_str.empty()) {
 		file.open(_str);
+		if (!file.is_open()) {
+			std::cerr << "Coudn't open the file." << std::endl;
+			exit (1);
+		}
 	}
 	_exit = false;
 	for (; std::getline(_str.empty() ? std::cin : file, line);) {
@@ -336,11 +325,11 @@ void			Parser::read_content( void ) {
 		} catch (ParserError & e) {
 			_queueErr.push(e);
 		}
-		_ln++;
+		Parser::_ln++;
 	}
-	// if (!_exit) {
-	// 	_queueErr.push(ParserError("Missing Exit instruction", "Syntax error", -1));
-	// }
+	if (!_exit) {
+		_queueErr.push(ParserError("Syntax Error : Missing Exit instruction"));
+	}
 	if (file.is_open())
 		file.close();
 }
