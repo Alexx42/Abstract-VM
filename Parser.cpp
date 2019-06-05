@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 18:56:10 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/06/02 22:14:38 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/06/04 20:46:56 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,15 @@ std::string		Parser::extractString( std::string source, char start, char end ) {
 			return result ;
 		}
 		else {
-			throw ParserError("Syntax Error : Missing ')'");
+			std::string err = "Syntax Error : Missing ";
+			err += end;
+			throw ParserError(err);
 		}
 	}
 	else {
-		throw ParserError("Syntax Error : Missing '('");
+		std::string err = "Syntax Error : Missing ";
+		err += start;
+		throw ParserError(err);
 	}
 	return std::string() ;
 }
@@ -176,7 +180,7 @@ std::string		Parser::verify_value( std::string val, eOperandType e ) {
 	try {
 		str_p = extractString(val, '(', ')');
 	} catch (ParserError & e) {
-		std::cout << e.what() << std::endl;
+		throw e;
 	}
 	if (str_p.empty()) {
 		throw ParserError("Syntax Error : Invalid Value");
@@ -224,13 +228,18 @@ IOperand		const *Parser::verify_type( std::vector<std::pair<std::string, bool>>:
 	size_t					find_s;
 	std::string				nb;
 	CreateOperand			op;
+	std::string				type;
 
 	find_s = str.find(' ');
 	if (count_words(str) != 1 + it->second)
 		throw ParserError("Syntax Error : Invalid number of arguments");
 	if (it->second == false)
 		return nullptr;
-	std::string type = extractString(str, ' ', '(');
+	try {
+		type = extractString(str, ' ', '(');
+	} catch (ParserError & e) {
+		throw e;
+	}
 	if (type.find(';') != std::string::npos) {
 		throw ParserError("Syntax Error : ';' found near type");
 	}

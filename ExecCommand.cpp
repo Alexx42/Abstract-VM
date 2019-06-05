@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/29 00:00:03 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/06/02 20:42:55 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/06/04 21:00:22 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,8 @@ ExecCommand::ExecCommand( std::vector<std::pair<std::string, const IOperand *>> 
 	execFn[8] = {Max, 		{"max"}, 		&ExecCommand::max_s};
 	execFn[9] = {Min, 		{"min"}, 		&ExecCommand::min_s};
 	execFn[10] = {Dump, 	{"dump"}, 		&ExecCommand::dump_s};
-	execFn[11] = {Exit, 	{"exit"}, 		&ExecCommand::exit_s};
+	execFn[11] = {Div, 		{"div"}, 		&ExecCommand::div_s};
+	execFn[12] = {Exit, 	{"exit"}, 		&ExecCommand::exit_s};
 }
 
 ExecCommand::~ExecCommand( void )
@@ -107,6 +108,7 @@ void		ExecCommand::div_s( IOperand const * rhs ) {
 	IOperand const *v1 = (_s.back());
 	_s.pop_back();
 	IOperand const *v2 = (_s.back());
+	std::cout << v1->toString() << std::endl;
 	if (v1->toString() == "0") {
 		throw ExecError("Runtime Error : Division by 0");
 	}

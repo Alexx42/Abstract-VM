@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 18:32:17 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/06/02 20:01:40 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/06/04 20:50:12 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,8 +91,6 @@ class Operand : public IOperand {
 					return (_cr->createOperand(e, std::to_string(nb)));
 				} else {
 					long double nb = std::stold(this->toString()) * std::stold(rhs.toString());
-					std::cout << "nb = " << nb << std::endl;
-					std::cout << "max = " << FLT_MAX << std::endl;
 					if (hasOUflow<long double>(nb, e)) {
 						throw ExecCommand::ExecError("Overflow | Underflow");
 					}
