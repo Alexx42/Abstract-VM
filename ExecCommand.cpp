@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/29 00:00:03 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/06/04 21:00:22 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/06/06 12:29:20 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,11 @@ void		ExecCommand::mul_s( IOperand const * rhs ) {
 	_s.pop_back();
 	IOperand const *v2 = (_s.back());
 	_s.pop_back();
-	_s.push_back(*v2 * *v1);
+	try {
+		_s.push_back(*v2 * *v1);
+	} catch (ExecError & e) {
+		throw e;
+	}
 }
 
 void		ExecCommand::mod_s( IOperand const * rhs ) {
@@ -108,12 +112,15 @@ void		ExecCommand::div_s( IOperand const * rhs ) {
 	IOperand const *v1 = (_s.back());
 	_s.pop_back();
 	IOperand const *v2 = (_s.back());
-	std::cout << v1->toString() << std::endl;
 	if (v1->toString() == "0") {
 		throw ExecError("Runtime Error : Division by 0");
 	}
 	_s.pop_back();
-	_s.push_back(*v2 / *v1);
+	try {
+		_s.push_back(*v2 + *v1);
+	} catch (ExecError & e) {
+		throw e;
+	}
 }
 
 void		ExecCommand::max_s( IOperand const * rhs ) {
@@ -160,8 +167,14 @@ void		ExecCommand::sub_s( IOperand const * rhs ) {
 	IOperand const *v1 = (_s.back());
 	_s.pop_back();
 	IOperand const *v2 = (_s.back());
+	std::cout << v2->toString() << std::endl;
+	std::cout << v1->toString() << std::endl;
 	_s.pop_back();
-	_s.push_back(*v2 / *v1);
+	try {
+		_s.push_back(*v2 - *v1);
+	} catch (ExecError & e) {
+		throw e;
+	}
 }
 
 void		ExecCommand::add_s( IOperand const * rhs ) {
@@ -175,8 +188,8 @@ void		ExecCommand::add_s( IOperand const * rhs ) {
 	_s.pop_back();
 	try {
 		_s.push_back(*v2 + *v1);
-	} catch (ExecError e) {
-		throw ExecError("Runtime Error : Overflow - Underflow");
+	} catch (ExecError & e) {
+		throw e;
 	}
 }
 
@@ -229,7 +242,7 @@ void		ExecCommand::execCommands( void ) {
 					break ;
 				} catch (ExecError & e) {
 					std::cout << e.what() << std::endl;
-					break ;
+					return ;
 				}
 			}
 		}

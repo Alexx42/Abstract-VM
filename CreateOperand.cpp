@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/28 18:16:44 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/05/31 21:09:17 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/06/06 12:16:36 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,11 @@
 #include "Operand.hpp"
 
 CreateOperand::CreateOperand( void ) {
+	disp.insert({INT8, [&]( std::string const & value ){return createInt8(value);}});
+	disp.insert({INT16, [&]( std::string const & value ){return createInt16(value);}});
+	disp.insert({INT32, [&]( std::string const & value ){return createInt32(value);}});
+	disp.insert({FLOAT, [&]( std::string const & value ){return createFloat(value);}});
+	disp.insert({DOUBLE, [&]( std::string const & value ){return createDouble(value);}});
 	return ;
 }
 

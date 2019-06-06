@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/02 20:44:50 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/06/02 21:32:21 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/06/04 22:01:42 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,12 +59,15 @@ void		Flags::parserStr( void ) {
 				if (_str[i][j] == 'h') {
 					_h = 1;
 					_nbFlags++;
-					j++;
 				}
 				if (_str[i][j] == 'd') {
 					_d = 1;
 					_nbFlags++;
-					j++;
+				}
+				if (_str[i][j] != 'd' && _str[i][j] != 'h')
+				{
+					std::cout << _str[i][j] << ": Invalid flag" << std::endl;
+					exit (1);
 				}
 				if (_str[i][j])
 					j++;

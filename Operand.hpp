@@ -6,7 +6,7 @@
 /*   By: ale-goff <ale-goff@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/05/27 18:32:17 by ale-goff          #+#    #+#             */
-/*   Updated: 2019/06/04 20:50:12 by ale-goff         ###   ########.fr       */
+/*   Updated: 2019/06/06 12:18:48 by ale-goff         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,6 @@ class Operand : public IOperand {
 		IOperand const * operator-(IOperand const & rhs) const {
 			eOperandType	e = getType() > rhs.getType() ? getType() : rhs.getType();
 			if (getPrecision() < rhs.getPrecision()) return rhs - *this;
-			try {
 				if (e < FLOAT) {
 					long nb = std::stol(this->toString()) - std::stol(rhs.toString());
 					if (hasOUflow<long long>(nb, e)) {
@@ -73,16 +72,12 @@ class Operand : public IOperand {
 					}
 					return (_cr->createOperand(e, std::to_string(nb)));
 				}
-			} catch (std::exception e) {
-				std::cout << e.what() << std::endl;
-			}
 			return this;
 		}
 
 		IOperand const * operator*(IOperand const & rhs) const {
 			eOperandType	e = getType() > rhs.getType() ? getType() : rhs.getType();
 			if (getPrecision() < rhs.getPrecision()) return rhs * *this;
-			try {
 				if (e < FLOAT) {
 					long nb = std::stol(this->toString()) * std::stol(rhs.toString());
 					if (hasOUflow<long long>(nb, e)) {
@@ -96,16 +91,12 @@ class Operand : public IOperand {
 					}
 					return (_cr->createOperand(e, std::to_string(nb)));
 				}
-			} catch (std::exception e) {
-				std::cout << e.what() << std::endl;
-			}
 			return this;
 		}
 
 		IOperand const * operator/(IOperand const & rhs) const {
 			eOperandType	e = getType() > rhs.getType() ? getType() : rhs.getType();
 			if (getPrecision() < rhs.getPrecision()) return rhs / *this;
-			try {
 				if (e < FLOAT) {
 					long nb = std::stol(this->toString()) / std::stol(rhs.toString());
 					if (hasOUflow<long long>(nb, e)) {
@@ -118,9 +109,6 @@ class Operand : public IOperand {
 						throw ExecCommand::ExecError("Overflow | Underflow");
 					}
 					return (_cr->createOperand(e, std::to_string(nb)));
-				}
-			} catch (std::exception e) {
-				std::cout << e.what() << std::endl;
 			}
 			return this;
 		}
